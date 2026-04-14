@@ -1,40 +1,155 @@
-# ✅ GTD
+# GTD
 
-A single-user Streamlit app that operationalizes David Allen's **Getting Things
-Done** methodology: capture, clarify, organize, reflect, engage.
+An AI-native **Getting Things Done** app. Talk to it like a coach — it captures,
+clarifies, and organizes on your behalf, using Claude as the agent behind a
+visible chain-of-thought interface.
 
-Data lives in a local SQLite database (`gtd.db`) so it works offline and has no
-external dependencies beyond Streamlit itself.
+- **Kanban board** as the primary visual surface (project views, Today, Inbox, Upcoming).
+- **Thin chat bar** pinned to the bottom — speak/type in natural language.
+- **Reasoning panel** on the right that streams the agent's thinking, tool calls,
+  and results in real time.
+- **Voice-friendly**: designed for messy stream-of-consciousness dumps from a
+  phone voice keyboard. Capture first, clarify later.
+- Local-first: SQLite via Drizzle; runs entirely on your machine.
 
-## Features
+## Stack
 
-- **📥 Capture** — Frictionless quick-add. Paste multiple lines to capture in bulk.
-- **🔍 Clarify** — One-at-a-time inbox processor with the 2-minute rule, new-project creation, waiting-for, someday, reference, and trash.
-- **✅ Next Actions** — Filter by context (`@computer`, `@phone`, …).
-- **📁 Projects** — Each project surfaces a warning if it lacks a defined next action.
-- **⏳ Waiting For** — Track delegated items with follow-up dates.
-- **💭 Someday / Reference** — Parking lot for later + a lightweight reference shelf.
-- **🔄 Weekly Review** — Guided checklist with stale-project detection and a review log.
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS 4** + a small set of shadcn-flavored primitives on Radix
+- **SQLite** via **better-sqlite3** + **Drizzle ORM**
+- **TanStack Query** for client state
+- **dnd-kit** for the Kanban board
+- **Anthropic SDK** (Claude Sonnet 4.6 by default) driving the agent loop with
+  streaming + extended thinking + tool use
 
-## Running it
+## Getting started
+
+### 1. Install dependencies
 
 ```bash
-pip install -r requirements.txt
-streamlit run streamlit_app.py
+pnpm install
 ```
 
-The database is created automatically on first launch. To use a different path,
-set the `GTD_DB_PATH` environment variable.
+### 2. Set up your API key
 
-## Project structure
+Copy `.env.example` to `.env.local` (already created for you — empty) and paste
+your Anthropic API key:
+
+```bash
+# .env.local
+ANTHROPIC_API_KEY=sk-ant-...
+DATABASE_URL=file:./gtd.db
+```
+
+Grab a key at <https://console.anthropic.com/settings/keys>. `.env.local` is
+gitignored.
+
+### 3. Initialize the database
+
+```bash
+pnpm db:migrate   # apply schema
+pnpm db:seed      # load a few example projects and actions
+```
+
+### 4. Run the dev server
+
+```bash
+pnpm dev
+```
+
+Open <http://localhost:3000>. You'll land on **Today**.
+
+## How to use it
+
+1. **Capture** — Type or voice-dictate into the bottom bar. Examples:
+   - `"need to call the dentist tomorrow and buy cat food on the way home"`
+   - `"idea: write a blog post about focus rituals"`
+   - `"remind me to follow up with sarah on the design review"`
+   The agent will either create the actions directly or drop them into the inbox
+   if they need more thought.
+2. **Clarify** — Open **Inbox** and say `"process my inbox"`. The agent walks
+   each item and asks what you want to do with it, or makes best-guess decisions.
+3. **Organize** — Drag cards between Kanban columns (Next / Waiting / Scheduled /
+   Done) inside a project, or tell the agent `"move the dentist call to the
+   health errands project"`.
+4. **Engage** — Ask `"what should I do right now?"` and Claude will look at
+   your current state and give you an opinionated recommendation.
+
+## Architecture notes
+
+- **Agent loop** (`src/lib/agent/`) — Manual streaming loop on top of
+  `client.messages.stream()`. Yields typed events (`thinking_delta`,
+  `message_delta`, `tool_call`, `tool_result`, `done`) to the caller. The
+  `/api/agent` route handler forwards these to the browser as Server-Sent
+  Events, and the `AgentProvider` context renders them into the reasoning panel
+  as they stream.
+- **Tools** (`src/lib/agent/tools.ts`) — ~9 tools (capture, clarify, create/update
+  project/action, complete, delete, read state). Each tool has a Zod schema +
+  an `execute` function that mutates the Drizzle DB. Tool results are surfaced
+  in the reasoning panel and trigger React Query cache invalidation so the
+  Kanban board updates live.
+- **Events table** — Every agent step (user message, thinking, tool call, tool
+  result) is persisted to the `events` table as an append-only audit log. The
+  `projects` and `actions` tables are effectively a materialized view of this.
+- **State snapshot** — Every agent turn opens with a JSON snapshot of current
+  projects, inbox, today, and waiting lists so the agent has context without
+  having to call `read_state` on every turn.
+
+## Scripts
+
+```bash
+pnpm dev            # Next.js dev server
+pnpm build          # production build
+pnpm typecheck      # tsc --noEmit
+pnpm db:generate    # generate drizzle migration from schema
+pnpm db:migrate     # apply migrations
+pnpm db:seed        # reset + reseed the DB with sample data
+pnpm db:studio      # drizzle-kit studio (visual inspector)
+```
+
+## Project layout
 
 ```
-streamlit_app.py   # UI (tabbed Streamlit app)
-gtd/db.py          # SQLite schema + data access helpers
-docs/SPEC.md       # Design spec for the system
+src/
+  app/
+    layout.tsx            # root shell (providers + app shell)
+    page.tsx              # redirects to /today
+    today/                # Today view
+    inbox/                # Inbox (unprocessed captures)
+    projects/             # Project index
+    projects/[id]/        # Single project Kanban
+    upcoming/             # Time-bucketed upcoming list
+    api/
+      agent/              # streaming agent SSE endpoint
+      actions/            # REST for actions
+      projects/           # REST for projects
+  components/
+    app-shell.tsx         # sidebar + main + reasoning panel + agent bar
+    sidebar.tsx
+    agent-bar.tsx         # bottom chat input
+    reasoning-panel.tsx   # right-hand chain-of-thought panel
+    agent-context.tsx     # SSE client + React context
+    action-row.tsx        # list-style row for actions
+    ui/                   # button, card, input, checkbox primitives
+  lib/
+    agent/
+      index.ts            # streaming agent loop
+      tools.ts            # tool definitions + executors
+      prompts.ts          # system prompt + state snapshot
+    db/
+      schema.ts           # Drizzle schema
+      index.ts            # client singleton
+      migrate.ts          # migration runner
+      seed.ts             # sample data
+    queries.ts            # TanStack Query hooks
+    utils.ts              # cn helper
 ```
 
-## Spec
+## Roadmap
 
-See [`docs/SPEC.md`](docs/SPEC.md) for the full design spec, including the data
-model, functional requirements, and MVP scope.
+- Weekly Review mode (guided walk through all projects with stale detection)
+- Calendar integration (two-way sync with Google Calendar for scheduled actions)
+- Context tag filters (`@phone`, `@computer`, `@errands`, `@home`)
+- Someday/Maybe and Reference shelves
+- Voice input UI (browser SpeechRecognition + push-to-talk)
+- Multi-user / auth (currently single-user local)

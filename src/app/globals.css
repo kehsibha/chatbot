@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  /* surface colors — dark-first, close to Linear / modern tools */
+  --color-bg: #0b0d10;
+  --color-panel: #111418;
+  --color-panel-2: #161a20;
+  --color-border: #23272e;
+  --color-border-strong: #2f3540;
+  --color-fg: #e8ecf1;
+  --color-fg-muted: #9ba3ae;
+  --color-fg-dim: #606773;
+  --color-accent: #6366f1;
+  --color-accent-fg: #ffffff;
+  --color-warn: #f59e0b;
+  --color-ok: #10b981;
+  --color-danger: #ef4444;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #242932;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2f3540;
+}
+
+/* subtle pulse used by "thinking" indicators */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 1.6s ease-in-out infinite;
+}
