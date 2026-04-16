@@ -7,6 +7,7 @@
  * silence by restarting transparently while `isListening` is true.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { foldRecognitionResults } from "@/lib/speech/fold-recognition-results";
 
 export interface UseSpeechRecognitionReturn {
   /** Whether the browser supports the Speech Recognition API */
@@ -61,18 +62,16 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     recRef.current = rec;
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
-      let final = "";
-      let interim = "";
-      for (let i = 0; i < e.results.length; i++) {
-        const result = e.results[i];
-        if (result.isFinal) {
-          final += result[0].transcript;
-        } else {
-          interim += result[0].transcript;
-        }
-      }
-      if (final) {
-        setTranscript((prev) => (prev ? prev + " " + final.trim() : final.trim()));
+      // Important: `e.results` contains *all* results so far; each `onresult`
+      // fires for new segments. Only process from `resultIndex` or we repeat
+      // every finalized phrase on every callback (Chrome voice keyboard).
+      const { finalParts, interim } = foldRecognitionResults(e);
+      if (finalParts.length > 0) {
+        setTranscript((prev) => {
+          const chunk = finalParts.join(" ");
+          if (!prev) return chunk;
+          return `${prev} ${chunk}`;
+        });
       }
       setInterimTranscript(interim);
     };

@@ -30,6 +30,7 @@ export const SYSTEM_PROMPT = `You are a GTD (Getting Things Done) coach and prod
 
 ## Tool-use guidelines
 
+- Call \`navigate_ui\` when the user wants to **move the app** to a screen (e.g. "show my projects", "go to inbox", "open the kitchen project"). Always pair navigation with any data work they asked for — the UI does not change from text alone.
 - Call \`read_state\` when you need to look up an id or check what exists. Don't guess ids.
 - Batch tool calls when you can — if the user gives you five new ideas, make five \`capture_thought\` calls in one turn.
 - Prefer \`capture_thought\` for fresh dumps; prefer \`create_action\` when the user already specifies status/context/project.

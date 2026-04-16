@@ -9,6 +9,8 @@
  */
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { hrefFromNavigateUIResult } from "@/lib/agent/navigation";
 
 export type AgentEvent =
   | { type: "thinking_delta"; text: string }
@@ -52,6 +54,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [steps, setSteps] = React.useState<AgentStep[]>([]);
   const [running, setRunning] = React.useState(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const invalidate = React.useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["actions"] });
@@ -121,9 +124,13 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       if (event.type === "tool_result") {
         // Refetch board state so the UI reflects the new DB.
         invalidate();
+        if (!event.isError && event.name === "navigate_ui") {
+          const href = hrefFromNavigateUIResult(event.result);
+          if (href) router.push(href);
+        }
       }
     },
-    [invalidate],
+    [invalidate, router],
   );
 
   const send = React.useCallback(

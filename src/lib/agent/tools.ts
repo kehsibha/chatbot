@@ -14,6 +14,10 @@ import { and, eq } from "drizzle-orm";
 import type Anthropic from "@anthropic-ai/sdk";
 import { db, schema } from "@/lib/db";
 import type { ActionStatus, ProjectStatus } from "@/lib/db/schema";
+import {
+  executeNavigateUI,
+  navigateUISchema,
+} from "@/lib/agent/navigation";
 
 // ---------- zod schemas ----------
 
@@ -402,6 +406,13 @@ export const deleteAction = makeTool(
   },
 );
 
+export const navigateUI = makeTool(
+  "navigate_ui",
+  "Open a screen in the user's running app (client-side navigation). Use when they ask to go somewhere, see a list, or open a project — do not only describe it in text. For a specific project board, pass path=project and the real projectId from the snapshot or read_state.",
+  navigateUISchema,
+  async (input) => executeNavigateUI(input),
+);
+
 export const readState = makeTool(
   "read_state",
   "Read a slice of current state. Use this when you need to look up ids or see what's already in a project/inbox/today.",
@@ -474,6 +485,7 @@ export const ALL_TOOLS = [
   updateAction,
   completeAction,
   deleteAction,
+  navigateUI,
   readState,
 ];
 
