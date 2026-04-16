@@ -47,7 +47,7 @@ export function AgentBar({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t border-[var(--color-border)] bg-[var(--color-panel)] px-4 py-3"
+      className="border-t border-[var(--color-border)] bg-[var(--color-panel)] px-4 py-3 pr-20"
     >
       <div className="mx-auto flex max-w-4xl items-end gap-2">
         <div className="flex-1 rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-panel-2)] px-3 py-2">

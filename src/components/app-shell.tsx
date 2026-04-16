@@ -7,6 +7,7 @@ import * as React from "react";
 import { Sidebar } from "@/components/sidebar";
 import { AgentBar } from "@/components/agent-bar";
 import { ReasoningPanel } from "@/components/reasoning-panel";
+import { VoiceOrb } from "@/components/voice-orb";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [showReasoning, setShowReasoning] = React.useState(true);
@@ -22,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
       </div>
       {showReasoning && <ReasoningPanel />}
+      <VoiceOrb />
     </div>
   );
 }

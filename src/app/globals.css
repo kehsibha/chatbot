@@ -8,20 +8,21 @@
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 
-  /* surface colors — dark-first, close to Linear / modern tools */
-  --color-bg: #0b0d10;
-  --color-panel: #111418;
-  --color-panel-2: #161a20;
-  --color-border: #23272e;
-  --color-border-strong: #2f3540;
-  --color-fg: #e8ecf1;
-  --color-fg-muted: #9ba3ae;
-  --color-fg-dim: #606773;
-  --color-accent: #6366f1;
+  /* Claude-inspired warm cream palette */
+  --color-bg: #FAF7F2;
+  --color-panel: #FFFFFF;
+  --color-panel-2: #F3EDE5;
+  --color-border: #E8E0D4;
+  --color-border-strong: #D4C9BA;
+  --color-fg: #2D2B28;
+  --color-fg-muted: #6B6560;
+  --color-fg-dim: #A39E96;
+  --color-accent: #D97757;
+  --color-accent-light: #F5E6DE;
   --color-accent-fg: #ffffff;
-  --color-warn: #f59e0b;
-  --color-ok: #10b981;
-  --color-danger: #ef4444;
+  --color-warn: #D97706;
+  --color-ok: #059669;
+  --color-danger: #DC2626;
 }
 
 html,
@@ -44,11 +45,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #242932;
+  background: #D4C9BA;
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2f3540;
+  background: #C4B9AA;
 }
 
 /* subtle pulse used by "thinking" indicators */
@@ -58,4 +59,46 @@ body {
 }
 .animate-pulse-soft {
   animation: pulse-soft 1.6s ease-in-out infinite;
+}
+
+/* ── Voice orb animations ─────────────────────────────── */
+
+/* Breathing pulse rings when listening */
+@keyframes voice-breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Gentle spin for agent-responding state */
+@keyframes voice-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Panel slide-up entrance */
+@keyframes voice-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-voice-breathe {
+  animation: voice-breathe 1.8s ease-in-out infinite;
+}
+.animate-voice-orbit {
+  animation: voice-orbit 2s linear infinite;
+}
+.animate-voice-panel-in {
+  animation: voice-panel-enter 0.2s ease-out both;
 }
