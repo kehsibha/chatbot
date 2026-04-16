@@ -147,10 +147,17 @@ export async function* runAgent(
           b.type === "tool_use",
       );
 
-      // Append the assistant turn verbatim (preserves thinking blocks,
-      // which the API requires us to send back on the next turn when
-      // extended thinking is enabled).
-      messages.push({ role: "assistant", content: final.content });
+      // Append the assistant turn. Filter out thinking blocks with empty
+      // content — the API requires every thinking block to have non-empty
+      // `thinking` text, but the model sometimes returns empty ones.
+      const cleanedContent = final.content.filter((block) => {
+        const b = block as unknown as { type: string; thinking?: string };
+        if (b.type === "thinking") {
+          return !!b.thinking;
+        }
+        return true;
+      });
+      messages.push({ role: "assistant", content: cleanedContent });
 
       if (final.stop_reason !== "tool_use" || toolUses.length === 0) {
         yield { type: "done", runId };
