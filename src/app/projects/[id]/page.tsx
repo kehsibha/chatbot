@@ -233,7 +233,7 @@ function ActionCard({
           )}
           {action.dueAt && (
             <span className="inline-flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {format(action.dueAt, "MMM d")}
+              <Clock className="h-3 w-3" /> {format(new Date(action.dueAt), "MMM d")}
             </span>
           )}
           {action.delegatedTo && (

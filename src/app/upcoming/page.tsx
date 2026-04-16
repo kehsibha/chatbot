@@ -21,12 +21,12 @@ function bucketize(actions: Action[]): Bucket[] {
   const withDate = actions
     .filter((a) => a.status !== "done" && (a.dueAt || a.scheduledAt))
     .sort((a, b) => {
-      const aD = (a.dueAt ?? a.scheduledAt)!.getTime();
-      const bD = (b.dueAt ?? b.scheduledAt)!.getTime();
+      const aD = new Date(a.dueAt ?? a.scheduledAt!).getTime();
+      const bD = new Date(b.dueAt ?? b.scheduledAt!).getTime();
       return aD - bD;
     });
   for (const a of withDate) {
-    const d = (a.dueAt ?? a.scheduledAt)!;
+    const d = new Date((a.dueAt ?? a.scheduledAt)!);
     if (isToday(d)) buckets.Today.push(a);
     else if (isTomorrow(d)) buckets.Tomorrow.push(a);
     else if (isThisWeek(d)) buckets["This week"].push(a);

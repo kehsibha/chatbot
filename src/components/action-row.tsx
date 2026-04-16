@@ -28,7 +28,7 @@ export function ActionRow({
     });
   };
 
-  const due = action.dueAt;
+  const due = action.dueAt ? new Date(action.dueAt) : null;
   const overdue = due != null && isPast(due) && !isToday(due);
 
   return (
