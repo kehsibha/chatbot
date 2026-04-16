@@ -1,2 +1,4 @@
 streamlit
 openai
+pywebview
+py2app
