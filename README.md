@@ -151,6 +151,8 @@ src/
 
 ## Roadmap
 
+- **Workspace context** — optional paths (local repo, strategy docs) the agent can read summaries from; long-term RAG / embeddings for “what you’re actually working on.”
+- **Agent presence** — animated cursor(s) for parallel tool runs, optional TTS so you can *hear* the coach without reading markdown.
 - Weekly Review mode (guided walk through all projects with stale detection)
 - Calendar integration (two-way sync with Google Calendar for scheduled actions)
 - Context tag filters (`@phone`, `@computer`, `@errands`, `@home`)

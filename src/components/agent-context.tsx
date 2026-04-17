@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { hrefFromNavigateUIResult } from "@/lib/agent/navigation";
 import { computeTouchHighlightKeys } from "@/lib/agent/ui-highlight";
+import { computeTouchHighlightKeysFromToolCall } from "@/lib/agent/ui-highlight-from-call";
 
 export type AgentEvent =
   | { type: "thinking_delta"; text: string }
@@ -54,7 +55,7 @@ export function useAgent() {
   return ctx;
 }
 
-const GLOW_MS = 900;
+const GLOW_MS = 1400;
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [steps, setSteps] = React.useState<AgentStep[]>([]);
@@ -124,6 +125,14 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
               name: event.name,
               input: event.input,
             });
+            queueMicrotask(() =>
+              pulseTouchGlow(
+                computeTouchHighlightKeysFromToolCall(
+                  event.name,
+                  event.input,
+                ),
+              ),
+            );
             return next;
           }
           case "tool_result": {

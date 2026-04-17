@@ -12,6 +12,24 @@
 
 **Why:** User asked for a cleaner default canvas and wanted mic + reasoning controls together in the corner, not in the sidebar.
 
+## Voice panel layout + markdown
+
+**Decision:** Rebuild `VoicePanel` as chronological **turn blocks** (user bubble → agent markdown via `react-markdown` → collapsible gray **Activity** `<details>` for thinking + tools). Scroll container uses `useLayoutEffect` to pin `scrollTop` to `scrollHeight` on step/transcript changes.
+
+**Why:** Single “latest message” string hid history and felt bare; raw markdown looked messy; users wanted tool/reasoning noise tucked away but visible.
+
+## App halo while agent runs
+
+**Decision:** `AgentControlHalo` — `pointer-events-none` fixed inset with inner rounded ring using `agent-app-halo` CSS animation, driven by `running` from `AgentProvider`.
+
+**Why:** Clear “system is acting” affordance without blocking clicks.
+
+## Touch glow on `tool_call` (not only `tool_result`)
+
+**Decision:** `computeTouchHighlightKeysFromToolCall` + `queueMicrotask` pulse on `tool_call` SSE, lengthen pulse duration to 1.4s, strengthen CSS (outline + brighter shadow).
+
+**Why:** Highlights were easy to miss during slow tool execution; result-only pulse felt disconnected.
+
 ## Voice orb hydration
 
 **Decision:** Always render the same bottom-right dock (brain + mic); gate speech with `mounted && speech.isSupported` and disable the mic until then. Add `suppressHydrationWarning` on `<body>` for extension-injected attributes (e.g. Feedly).

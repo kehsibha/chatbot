@@ -11,12 +11,14 @@ import {
   AgentRegionGlow,
   AgentRouteGlow,
 } from "@/components/agent-touch-glow";
+import { AgentControlHalo } from "@/components/agent-control-halo";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [showReasoning, setShowReasoning] = React.useState(false);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="relative flex h-screen w-screen overflow-hidden">
+      <AgentControlHalo />
       <AgentRegionGlow region="sidebar">
         <Sidebar />
       </AgentRegionGlow>
