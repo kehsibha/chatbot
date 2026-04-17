@@ -6,7 +6,7 @@ visible chain-of-thought interface.
 
 - **Kanban board** as the primary visual surface (project views, Today, Inbox, Upcoming).
 - **Voice orb** for talking to the coach; the **reasoning** panel streams thinking and tool use (no bottom chat strip).
-- **Reasoning panel** (optional, off by default) — open from the sidebar to stream the agent's thinking, tool calls, and results.
+- **Reasoning panel** (optional, off by default) — open with the **brain** button next to the mic (bottom-right) to stream thinking, tool calls, and results.
 - **Voice-friendly**: designed for messy stream-of-consciousness dumps from a
   phone voice keyboard. Capture first, clarify later.
 - Local-first: SQLite via Drizzle; runs entirely on your machine.

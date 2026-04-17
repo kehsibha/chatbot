@@ -39,7 +39,7 @@ export function VoicePanel({
   const hasTranscript = !!(transcript || interimTranscript);
 
   return (
-    <div className="animate-voice-panel-in fixed bottom-24 right-6 z-50 flex w-[360px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-xl">
+    <div className="animate-voice-panel-in fixed bottom-[5.75rem] right-6 z-50 flex w-[360px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2.5">
         <span className="text-xs font-medium text-[var(--color-fg-muted)]">

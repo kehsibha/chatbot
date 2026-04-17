@@ -8,9 +8,9 @@
 
 ## Reasoning panel hidden by default
 
-**Decision:** `showReasoning` state in `AppShell` defaults to `false`; render `ReasoningPanel` only when true. Sidebar footer button toggles visibility.
+**Decision:** `showReasoning` state in `AppShell` defaults to `false`; render `ReasoningPanel` only when true. A **Brain** button in the bottom-right dock (next to the mic) toggles visibility.
 
-**Why:** User asked for a cleaner default canvas; reasoning is still one click away when debugging agent behavior.
+**Why:** User asked for a cleaner default canvas and wanted mic + reasoning controls together in the corner, not in the sidebar.
 
 ## Faster in-app navigation
 

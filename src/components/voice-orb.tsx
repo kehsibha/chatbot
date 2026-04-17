@@ -9,7 +9,7 @@
  * Keyboard shortcut: Ctrl+Shift+V toggles listening.
  */
 import * as React from "react";
-import { Mic, Loader2 } from "lucide-react";
+import { Mic, Loader2, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAgent } from "@/components/agent-context";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
@@ -17,7 +17,13 @@ import { VoicePanel } from "@/components/voice-panel";
 
 type OrbState = "idle" | "listening" | "processing" | "responding";
 
-export function VoiceOrb() {
+export function VoiceOrb({
+  showReasoning,
+  onToggleReasoning,
+}: {
+  showReasoning: boolean;
+  onToggleReasoning: () => void;
+}) {
   const { send, running } = useAgent();
   const speech = useSpeechRecognition();
 
@@ -94,11 +100,30 @@ export function VoiceOrb() {
     }
   }
 
-  if (!speech.isSupported) return null;
+  if (!speech.isSupported) {
+    return (
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          type="button"
+          onClick={onToggleReasoning}
+          title={showReasoning ? "Hide reasoning" : "Show reasoning"}
+          aria-pressed={showReasoning}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition-all duration-200",
+            showReasoning
+              ? "border-[var(--color-accent)] bg-[var(--color-accent-light)] text-[var(--color-accent)]"
+              : "border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-fg-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-fg)]",
+          )}
+        >
+          <Brain className="h-5 w-5" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Expanded transcript panel */}
+      {/* Expanded transcript panel — sits above the dock */}
       {expanded && (
         <VoicePanel
           transcript={speech.transcript}
@@ -108,55 +133,69 @@ export function VoiceOrb() {
         />
       )}
 
-      {/* The orb itself */}
-      <button
-        onClick={handleOrbClick}
-        aria-label={
-          orbState === "idle"
-            ? "Start voice input"
-            : orbState === "listening"
-              ? "Send voice message"
-              : "Toggle voice panel"
-        }
-        className={cn(
-          "fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full shadow-lg transition-all duration-200",
-          "h-12 w-12",
-          // Idle
-          orbState === "idle" &&
-            "bg-[var(--color-accent)] text-white hover:scale-105 hover:shadow-xl",
-          // Listening — accent bg with breathing ring
-          orbState === "listening" &&
-            "bg-[var(--color-accent)] text-white scale-105",
-          // Processing / responding
-          (orbState === "processing" || orbState === "responding") &&
-            "bg-[var(--color-panel)] text-[var(--color-accent)] border border-[var(--color-border)]",
-        )}
-      >
-        {/* Pulse rings (only when listening) */}
-        {orbState === "listening" && (
-          <>
-            <span className="animate-voice-breathe absolute inset-0 rounded-full bg-[var(--color-accent)] opacity-40" />
-            <span
-              className="animate-voice-breathe absolute inset-0 rounded-full bg-[var(--color-accent)] opacity-20"
-              style={{ animationDelay: "0.4s" }}
-            />
-          </>
-        )}
-
-        {/* Spinning ring (processing / responding) */}
-        {(orbState === "processing" || orbState === "responding") && (
-          <span className="animate-voice-orbit absolute inset-[-3px] rounded-full border-2 border-transparent border-t-[var(--color-accent)]" />
-        )}
-
-        {/* Icon */}
-        <span className="relative z-10">
-          {orbState === "processing" || orbState === "responding" ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Mic className="h-5 w-5" />
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onToggleReasoning}
+          title={showReasoning ? "Hide reasoning" : "Show reasoning"}
+          aria-pressed={showReasoning}
+          className={cn(
+            "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border shadow-lg transition-all duration-200",
+            showReasoning
+              ? "border-[var(--color-accent)] bg-[var(--color-accent-light)] text-[var(--color-accent)]"
+              : "border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-fg-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-fg)]",
           )}
-        </span>
-      </button>
+        >
+          <Brain className="h-5 w-5" />
+        </button>
+
+        {/* Mic — primary capture */}
+        <button
+          type="button"
+          onClick={handleOrbClick}
+          aria-label={
+            orbState === "idle"
+              ? "Start voice input"
+              : orbState === "listening"
+                ? "Send voice message"
+                : "Toggle voice panel"
+          }
+          className={cn(
+            "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-lg transition-all duration-200",
+            // Idle
+            orbState === "idle" &&
+              "bg-[var(--color-accent)] text-white hover:scale-105 hover:shadow-xl",
+            // Listening — accent bg with breathing ring
+            orbState === "listening" &&
+              "bg-[var(--color-accent)] text-white scale-105",
+            // Processing / responding
+            (orbState === "processing" || orbState === "responding") &&
+              "border border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-accent)]",
+          )}
+        >
+          {orbState === "listening" && (
+            <>
+              <span className="animate-voice-breathe absolute inset-0 rounded-full bg-[var(--color-accent)] opacity-40" />
+              <span
+                className="animate-voice-breathe absolute inset-0 rounded-full bg-[var(--color-accent)] opacity-20"
+                style={{ animationDelay: "0.4s" }}
+              />
+            </>
+          )}
+
+          {(orbState === "processing" || orbState === "responding") && (
+            <span className="animate-voice-orbit absolute inset-[-3px] rounded-full border-2 border-transparent border-t-[var(--color-accent)]" />
+          )}
+
+          <span className="relative z-10">
+            {orbState === "processing" || orbState === "responding" ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Mic className="h-5 w-5" />
+            )}
+          </span>
+        </button>
+      </div>
     </>
   );
 }

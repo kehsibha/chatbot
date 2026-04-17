@@ -12,14 +12,10 @@ import {
   FolderKanban,
   CalendarRange,
   Sparkles,
-  Brain,
-  PanelRightOpen,
-  PanelRightClose,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { prefetchProject, useProjects } from "@/lib/queries";
-import { Button } from "@/components/ui/button";
 
 const primaryLinks = [
   { href: "/today", label: "Today", icon: Sun },
@@ -28,13 +24,7 @@ const primaryLinks = [
   { href: "/upcoming", label: "Upcoming", icon: CalendarRange },
 ];
 
-export function Sidebar({
-  showReasoning,
-  onToggleReasoning,
-}: {
-  showReasoning: boolean;
-  onToggleReasoning: () => void;
-}) {
+export function Sidebar() {
   const pathname = usePathname();
   const qc = useQueryClient();
   const { data: projects } = useProjects();
@@ -68,7 +58,7 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="mt-4 flex min-h-0 flex-1 flex-col px-4">
+      <div className="mt-6 flex min-h-0 flex-1 flex-col px-4">
         <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-fg-dim)]">
           Projects
         </div>
@@ -105,24 +95,6 @@ export function Sidebar({
               );
             })}
         </div>
-      </div>
-
-      <div className="shrink-0 border-t border-[var(--color-border)] p-2">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-9 w-full justify-start gap-2 px-2 text-xs font-normal text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
-          onClick={onToggleReasoning}
-          title={showReasoning ? "Hide reasoning panel" : "Show reasoning panel"}
-        >
-          {showReasoning ? (
-            <PanelRightClose className="h-4 w-4 shrink-0" />
-          ) : (
-            <PanelRightOpen className="h-4 w-4 shrink-0" />
-          )}
-          <Brain className="h-4 w-4 shrink-0" />
-          <span className="truncate">Reasoning</span>
-        </Button>
       </div>
     </aside>
   );
