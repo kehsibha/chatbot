@@ -56,11 +56,17 @@ pnpm db:seed      # load a few example projects and actions
 pnpm dev
 ```
 
-If the dev server throws **`__webpack_modules__[moduleId] is not a function`**, stop it and clear the build cache, then start again:
+If the dev server throws **`__webpack_modules__[moduleId] is not a function`** or **`Cannot find module './623.js'`** (or any missing file under `.next/server/`), the compiled cache is out of sync. **Stop every `pnpm dev` / `next dev` process**, then:
 
 ```bash
 pnpm dev:clean
 ```
+
+That removes `.next` and starts fresh. Hot reload alone cannot fix a broken chunk map.
+
+### Where your data lives
+
+Projects and actions are stored in **SQLite** at the path from `DATABASE_URL` (default **`./gtd.db`** in the project root). That file persists across app restarts; it is **not** in git. Back it up if you care about the machine (copy `gtd.db` elsewhere).
 
 Open <http://localhost:3000>. You'll land on **Today**.
 
