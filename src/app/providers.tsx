@@ -14,8 +14,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 10_000,
+            // Local SQLite + same-tab UI: treat server reads as fresh longer so
+            // route changes reuse cache and feel instant unless invalidated.
+            staleTime: 5 * 60_000,
+            gcTime: 30 * 60_000,
             refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
           },
         },
       }),

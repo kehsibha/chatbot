@@ -25,8 +25,8 @@ export default function TodayPage() {
         )}
         {!isLoading && today.length === 0 && (
           <div className="rounded-md border border-dashed border-[var(--color-border)] px-6 py-10 text-center text-sm text-[var(--color-fg-muted)]">
-            Nothing due today. Use the bar below to capture or ask the agent
-            what you should do next.
+            Nothing due today. Use the voice orb or reasoning panel to capture
+            or ask the agent what you should do next.
           </div>
         )}
         <div className="flex flex-col gap-0.5">

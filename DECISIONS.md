@@ -6,6 +6,14 @@
 
 **Ruled out:** Returning opaque URLs from the model (error-prone ids), or inferring navigation from assistant text only (no reliable hook).
 
+## Faster in-app navigation
+
+**Decision:** Raise TanStack Query `staleTime` / `gcTime` for local reads, enable explicit `prefetch` on sidebar and project-card links plus `prefetchProject()` on hover/focus, and add route-level `loading.tsx` skeletons.
+
+**Why:** Each route was refetching on every visit while data was still “stale” after 10s; project Kanban blocked the whole page until fetch completed. Longer freshness + prefetch + instant skeleton feedback makes clicks feel immediate for a local SQLite app.
+
+**Ruled out:** `keepPreviousData` on `useProject` (would flash wrong project when switching ids).
+
 ## Remove full-width bottom agent bar
 
 **Decision:** Remove `AgentBar` from `AppShell` and fold a small textarea + send control into the bottom of `ReasoningPanel` so typing to the agent does not consume a permanent strip across the main canvas.

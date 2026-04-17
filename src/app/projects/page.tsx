@@ -3,12 +3,14 @@
  * Projects index — grid of project cards with progress and counts.
  */
 import Link from "next/link";
-import { useProjects } from "@/lib/queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { prefetchProject, useProjects } from "@/lib/queries";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export default function ProjectsPage() {
+  const qc = useQueryClient();
   const { data: projects = [], isLoading } = useProjects();
 
   return (
@@ -28,7 +30,13 @@ export default function ProjectsPage() {
                 ? Math.round((p.counts.done / p.counts.total) * 100)
                 : 0;
             return (
-              <Link key={p.id} href={`/projects/${p.id}`}>
+              <Link
+                key={p.id}
+                href={`/projects/${p.id}`}
+                prefetch
+                onMouseEnter={() => prefetchProject(qc, p.id)}
+                onFocus={() => prefetchProject(qc, p.id)}
+              >
                 <Card className="cursor-pointer p-4 transition-colors hover:border-[var(--color-border-strong)]">
                   <div className="mb-2 flex items-center gap-2">
                     <span

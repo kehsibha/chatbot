@@ -1,7 +1,7 @@
 "use client";
 /**
  * Inbox view — raw captures awaiting clarification. The intended workflow:
- *   1. Dump stuff via the agent bar ("I need to fix the X and Y and Z").
+ *   1. Dump stuff via voice or the reasoning panel ("I need to fix the X and Y and Z").
  *   2. Open inbox, ask the agent "process my inbox" — it walks each item.
  */
 import { useActions } from "@/lib/queries";

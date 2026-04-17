@@ -4,7 +4,12 @@
  * the agent does most writes via the streaming endpoint; these hooks
  * mainly drive reads and a few direct-UI mutations (checkboxes, drag).
  */
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import type { Action, Project } from "@/lib/db/schema";
 
 export type ProjectWithCounts = Project & {
@@ -43,6 +48,18 @@ export function useProject(id: string) {
         `/api/projects/${id}`,
       ),
     enabled: !!id,
+  });
+}
+
+/** Warm cache before navigation (e.g. sidebar / project card hover). */
+export function prefetchProject(qc: QueryClient, id: string) {
+  if (!id) return;
+  return qc.prefetchQuery({
+    queryKey: ["projects", id],
+    queryFn: () =>
+      fetchJson<{ project: Project; actions: Action[] }>(
+        `/api/projects/${id}`,
+      ),
   });
 }
 

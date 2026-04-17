@@ -14,7 +14,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useProjects } from "@/lib/queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { prefetchProject, useProjects } from "@/lib/queries";
 
 const primaryLinks = [
   { href: "/today", label: "Today", icon: Sun },
@@ -25,6 +26,7 @@ const primaryLinks = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const qc = useQueryClient();
   const { data: projects } = useProjects();
 
   return (
@@ -42,6 +44,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              prefetch
               className={cn(
                 "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-panel-2)] hover:text-[var(--color-fg)]",
                 active &&
@@ -66,10 +69,13 @@ export function Sidebar() {
               const href = `/projects/${p.id}`;
               const active = pathname === href;
               return (
-                <Link
-                  key={p.id}
-                  href={href}
-                  className={cn(
+            <Link
+              key={p.id}
+              href={href}
+              prefetch
+              onMouseEnter={() => prefetchProject(qc, p.id)}
+              onFocus={() => prefetchProject(qc, p.id)}
+              className={cn(
                     "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-panel-2)] hover:text-[var(--color-fg)]",
                     active &&
                       "bg-[var(--color-panel-2)] text-[var(--color-fg)]",
