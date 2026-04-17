@@ -16,11 +16,11 @@
 
 ## Remove full-width bottom agent bar
 
-**Decision:** Remove `AgentBar` from `AppShell` and fold a small textarea + send control into the bottom of `ReasoningPanel` so typing to the agent does not consume a permanent strip across the main canvas.
+**Decision:** Remove `AgentBar` from `AppShell`. Do not replace it with another persistent text composer; the **voice orb** sends to `/api/agent`, and the **reasoning panel** only shows streamed thinking/tools/messages.
 
-**Why:** The user wanted the bottom panel gone; voice + right-rail messaging keeps capture and visible agency without competing with Kanban/lists for vertical space.
+**Why:** The user wanted the bottom chat strip gone entirely; duplicate inputs (reasoning footer + orb) still felt like the same UI pattern.
 
-**Ruled out:** Dropping typed input entirely (keyboard-heavy GTD workflows still need it).
+**Trade-off:** No keyboard capture in chrome — voice-first unless we add a minimal modal/command-palette later.
 
 ## Speech recognition transcript folding
 
