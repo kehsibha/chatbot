@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { prefetchProject, useProjects } from "@/lib/queries";
+import { AgentRegionGlow, AgentProjectGlow } from "@/components/agent-touch-glow";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,7 @@ export default function ProjectsPage() {
   const { data: projects = [], isLoading } = useProjects();
 
   return (
-    <div>
+    <AgentRegionGlow region="projects" className="min-h-full">
       <PageHeader
         title="Projects"
         subtitle="Outcomes that take more than one action."
@@ -37,7 +38,8 @@ export default function ProjectsPage() {
                 onMouseEnter={() => prefetchProject(qc, p.id)}
                 onFocus={() => prefetchProject(qc, p.id)}
               >
-                <Card className="cursor-pointer p-4 transition-colors hover:border-[var(--color-border-strong)]">
+                <AgentProjectGlow projectId={p.id}>
+                  <Card className="cursor-pointer p-4 transition-colors hover:border-[var(--color-border-strong)]">
                   <div className="mb-2 flex items-center gap-2">
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-full"
@@ -78,11 +80,12 @@ export default function ProjectsPage() {
                     <span>{p.counts.waiting} waiting</span>
                   </div>
                 </Card>
+                </AgentProjectGlow>
               </Link>
             );
           })}
         </div>
       </div>
-    </div>
+    </AgentRegionGlow>
   );
 }

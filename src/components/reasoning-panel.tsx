@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAgent, type AgentStep } from "@/components/agent-context";
+import { AgentRegionGlow } from "@/components/agent-touch-glow";
 import { cn } from "@/lib/utils";
 
 export function ReasoningPanel() {
@@ -31,7 +32,8 @@ export function ReasoningPanel() {
   }, [steps, running]);
 
   return (
-    <aside className="flex h-full w-96 flex-col border-l border-[var(--color-border)] bg-[var(--color-panel)]">
+    <AgentRegionGlow region="reasoning">
+      <aside className="flex h-full w-96 flex-col border-l border-[var(--color-border)] bg-[var(--color-panel)]">
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
         <div className="flex items-center gap-2">
           <Brain className="h-4 w-4 text-[var(--color-accent)]" />
@@ -70,6 +72,7 @@ export function ReasoningPanel() {
         ))}
       </div>
     </aside>
+    </AgentRegionGlow>
   );
 }
 

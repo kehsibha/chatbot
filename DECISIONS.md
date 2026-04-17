@@ -12,6 +12,14 @@
 
 **Why:** User asked for a cleaner default canvas and wanted mic + reasoning controls together in the corner, not in the sidebar.
 
+## Agent “touch” UI glow
+
+**Decision:** On each successful mutating `tool_result`, derive string keys (`region:*`, `route:*`, `project:*`, `action:*`) via `computeTouchHighlightKeys`, store them in `AgentProvider` for ~900ms, and apply a global CSS class `agent-touch-glow` on matching wrappers (`AgentRegionGlow`, `AgentRouteGlow`, `AgentProjectGlow`, `AgentActionGlow`).
+
+**Why:** User asked for visible feedback when the agent affects parts of the app; a short light-blue box-shadow pulse reads clearly without persisting state in the DB.
+
+**Ruled out:** Persisting highlight state server-side; coupling glow to `tool_call` before success (would flash on errors).
+
 ## Faster in-app navigation
 
 **Decision:** Raise TanStack Query `staleTime` / `gcTime` for local reads, enable explicit `prefetch` on sidebar and project-card links plus `prefetchProject()` on hover/focus, and add route-level `loading.tsx` skeletons.

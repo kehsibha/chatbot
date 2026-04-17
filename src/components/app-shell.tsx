@@ -7,19 +7,29 @@ import * as React from "react";
 import { Sidebar } from "@/components/sidebar";
 import { ReasoningPanel } from "@/components/reasoning-panel";
 import { VoiceOrb } from "@/components/voice-orb";
+import {
+  AgentRegionGlow,
+  AgentRouteGlow,
+} from "@/components/agent-touch-glow";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [showReasoning, setShowReasoning] = React.useState(false);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar />
-      <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+      <AgentRegionGlow region="sidebar">
+        <Sidebar />
+      </AgentRegionGlow>
+      <AgentRouteGlow className="min-w-0 flex-1 overflow-y-auto">
+        <main className="min-h-full">{children}</main>
+      </AgentRouteGlow>
       {showReasoning && <ReasoningPanel />}
-      <VoiceOrb
-        showReasoning={showReasoning}
-        onToggleReasoning={() => setShowReasoning((s) => !s)}
-      />
+      <AgentRegionGlow region="voice">
+        <VoiceOrb
+          showReasoning={showReasoning}
+          onToggleReasoning={() => setShowReasoning((s) => !s)}
+        />
+      </AgentRegionGlow>
     </div>
   );
 }

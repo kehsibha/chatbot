@@ -7,12 +7,13 @@
 import { useActions } from "@/lib/queries";
 import { ActionRow } from "@/components/action-row";
 import { PageHeader } from "@/components/page-header";
+import { AgentRegionGlow } from "@/components/agent-touch-glow";
 
 export default function InboxPage() {
   const { data: inbox = [], isLoading } = useActions({ view: "inbox" });
 
   return (
-    <div>
+    <AgentRegionGlow region="inbox" className="min-h-full">
       <PageHeader
         title="Inbox"
         subtitle="Unprocessed captures. Ask the agent to help clarify."
@@ -32,6 +33,6 @@ export default function InboxPage() {
           ))}
         </div>
       </div>
-    </div>
+    </AgentRegionGlow>
   );
 }

@@ -7,6 +7,7 @@ import { format, isToday, isTomorrow, isThisWeek } from "date-fns";
 import { useActions, useProjects } from "@/lib/queries";
 import { ActionRow } from "@/components/action-row";
 import { PageHeader } from "@/components/page-header";
+import { AgentRegionGlow } from "@/components/agent-touch-glow";
 import type { Action } from "@/lib/db/schema";
 
 type Bucket = { label: string; items: Action[] };
@@ -44,7 +45,7 @@ export default function UpcomingPage() {
   const buckets = bucketize(actions);
 
   return (
-    <div>
+    <AgentRegionGlow region="upcoming" className="min-h-full">
       <PageHeader
         title="Upcoming"
         subtitle={format(new Date(), "EEEE, MMMM d")}
@@ -79,6 +80,6 @@ export default function UpcomingPage() {
           ))}
         </div>
       </div>
-    </div>
+    </AgentRegionGlow>
   );
 }

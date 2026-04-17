@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { useActions, useProjects } from "@/lib/queries";
 import { ActionRow } from "@/components/action-row";
 import { PageHeader } from "@/components/page-header";
+import { AgentRegionGlow } from "@/components/agent-touch-glow";
 
 export default function TodayPage() {
   const { data: today = [], isLoading } = useActions({ view: "today" });
@@ -14,7 +15,7 @@ export default function TodayPage() {
   const projectMap = new Map(projects.map((p) => [p.id, p.title]));
 
   return (
-    <div>
+    <AgentRegionGlow region="today" className="min-h-full">
       <PageHeader
         title="Today"
         subtitle={format(new Date(), "EEEE, MMMM d")}
@@ -41,6 +42,6 @@ export default function TodayPage() {
           ))}
         </div>
       </div>
-    </div>
+    </AgentRegionGlow>
   );
 }

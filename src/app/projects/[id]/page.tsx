@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
 import { useProject, useUpdateAction } from "@/lib/queries";
 import { PageHeader } from "@/components/page-header";
+import { AgentActionGlow } from "@/components/agent-touch-glow";
 import { cn } from "@/lib/utils";
 import type { Action, ActionStatus } from "@/lib/db/schema";
 import { Clock, Tag, Hourglass } from "lucide-react";
@@ -216,7 +217,8 @@ function ActionCard({
   dragging?: boolean;
 }) {
   return (
-    <div
+    <AgentActionGlow
+      actionId={action.id}
       className={cn(
         "cursor-grab rounded-md border border-[var(--color-border)] bg-[var(--color-panel-2)] p-2 text-sm shadow-sm",
         dragging && "rotate-1 cursor-grabbing shadow-lg",
@@ -243,6 +245,6 @@ function ActionCard({
           )}
         </div>
       )}
-    </div>
+    </AgentActionGlow>
   );
 }

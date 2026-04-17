@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { prefetchProject, useProjects } from "@/lib/queries";
+import { AgentProjectGlow } from "@/components/agent-touch-glow";
 
 const primaryLinks = [
   { href: "/today", label: "Today", icon: Sun },
@@ -81,16 +82,18 @@ export function Sidebar() {
                       "bg-[var(--color-panel-2)] text-[var(--color-fg)]",
                   )}
                 >
-                  <span
-                    className="inline-block h-2 w-2 shrink-0 rounded-full"
-                    style={{ background: p.color ?? "#6366f1" }}
-                  />
-                  <span className="truncate">{p.title}</span>
-                  {p.counts.next > 0 && (
-                    <span className="ml-auto text-[10px] text-[var(--color-fg-dim)]">
-                      {p.counts.next}
-                    </span>
-                  )}
+                  <AgentProjectGlow projectId={p.id} className="flex w-full min-w-0 items-center gap-2">
+                    <span
+                      className="inline-block h-2 w-2 shrink-0 rounded-full"
+                      style={{ background: p.color ?? "#6366f1" }}
+                    />
+                    <span className="truncate">{p.title}</span>
+                    {p.counts.next > 0 && (
+                      <span className="ml-auto text-[10px] text-[var(--color-fg-dim)]">
+                        {p.counts.next}
+                      </span>
+                    )}
+                  </AgentProjectGlow>
                 </Link>
               );
             })}

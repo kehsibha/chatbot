@@ -11,6 +11,7 @@ import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { hrefFromNavigateUIResult } from "@/lib/agent/navigation";
+import { computeTouchHighlightKeys } from "@/lib/agent/ui-highlight";
 
 export type AgentEvent =
   | { type: "thinking_delta"; text: string }
@@ -38,6 +39,9 @@ export type AgentStep =
 type Ctx = {
   steps: AgentStep[];
   running: boolean;
+  /** Keys like `region:inbox`, `route:/today`, `project:id`, `action:id` for UI glow */
+  touchGlowKeys: readonly string[];
+  touchGlowToken: number;
   send: (message: string) => Promise<void>;
   clear: () => void;
 };
@@ -50,11 +54,34 @@ export function useAgent() {
   return ctx;
 }
 
+const GLOW_MS = 900;
+
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [steps, setSteps] = React.useState<AgentStep[]>([]);
   const [running, setRunning] = React.useState(false);
+  const [touchGlowKeys, setTouchGlowKeys] = React.useState<string[]>([]);
+  const [touchGlowToken, setTouchGlowToken] = React.useState(0);
+  const glowClearRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  const pulseTouchGlow = React.useCallback((keys: string[]) => {
+    if (keys.length === 0) return;
+    if (glowClearRef.current) clearTimeout(glowClearRef.current);
+    setTouchGlowKeys(keys);
+    setTouchGlowToken((t) => t + 1);
+    glowClearRef.current = setTimeout(() => {
+      setTouchGlowKeys([]);
+      glowClearRef.current = null;
+    }, GLOW_MS);
+  }, []);
+
+  React.useEffect(
+    () => () => {
+      if (glowClearRef.current) clearTimeout(glowClearRef.current);
+    },
+    [],
+  );
 
   const invalidate = React.useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["actions"] });
@@ -100,9 +127,21 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
             return next;
           }
           case "tool_result": {
-            const idx = next.findIndex(
+            const idx = prev.findIndex(
               (s) => s.kind === "tool" && s.id === event.id,
             );
+            const toolInput =
+              idx >= 0 && prev[idx]?.kind === "tool"
+                ? (prev[idx] as Extract<AgentStep, { kind: "tool" }>).input
+                : undefined;
+            const glowKeys = computeTouchHighlightKeys(
+              event.name,
+              toolInput,
+              event.result,
+              event.isError,
+            );
+            queueMicrotask(() => pulseTouchGlow(glowKeys));
+
             if (idx >= 0) {
               const step = next[idx] as Extract<AgentStep, { kind: "tool" }>;
               next[idx] = {
@@ -130,7 +169,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [invalidate, router],
+    [invalidate, pulseTouchGlow, router],
   );
 
   const send = React.useCallback(
@@ -187,8 +226,15 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const clear = React.useCallback(() => setSteps([]), []);
 
   const value = React.useMemo<Ctx>(
-    () => ({ steps, running, send, clear }),
-    [steps, running, send, clear],
+    () => ({
+      steps,
+      running,
+      touchGlowKeys,
+      touchGlowToken,
+      send,
+      clear,
+    }),
+    [steps, running, touchGlowKeys, touchGlowToken, send, clear],
   );
 
   return <AgentCtx.Provider value={value}>{children}</AgentCtx.Provider>;

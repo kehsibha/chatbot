@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useUpdateAction } from "@/lib/queries";
 import type { Action } from "@/lib/db/schema";
 import { Clock, Hourglass, Tag } from "lucide-react";
+import { AgentActionGlow } from "@/components/agent-touch-glow";
 
 export function ActionRow({
   action,
@@ -32,7 +33,8 @@ export function ActionRow({
   const overdue = due != null && isPast(due) && !isToday(due);
 
   return (
-    <div
+    <AgentActionGlow
+      actionId={action.id}
       className={cn(
         "group flex items-start gap-3 rounded-md border border-transparent px-3 py-2 hover:border-[var(--color-border)] hover:bg-[var(--color-panel-2)]",
         done && "opacity-50",
@@ -82,6 +84,6 @@ export function ActionRow({
           )}
         </div>
       </div>
-    </div>
+    </AgentActionGlow>
   );
 }
