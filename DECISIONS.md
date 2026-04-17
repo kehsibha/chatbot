@@ -6,6 +6,12 @@
 
 **Ruled out:** Returning opaque URLs from the model (error-prone ids), or inferring navigation from assistant text only (no reliable hook).
 
+## Reasoning panel hidden by default
+
+**Decision:** `showReasoning` state in `AppShell` defaults to `false`; render `ReasoningPanel` only when true. Sidebar footer button toggles visibility.
+
+**Why:** User asked for a cleaner default canvas; reasoning is still one click away when debugging agent behavior.
+
 ## Faster in-app navigation
 
 **Decision:** Raise TanStack Query `staleTime` / `gcTime` for local reads, enable explicit `prefetch` on sidebar and project-card links plus `prefetchProject()` on hover/focus, and add route-level `loading.tsx` skeletons.
