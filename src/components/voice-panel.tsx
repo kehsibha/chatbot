@@ -4,8 +4,8 @@
  * collapsible gray "Activity" for thinking + tool calls. Scroll sticks to bottom.
  */
 import * as React from "react";
-import ReactMarkdown from "react-markdown";
 import { X, Send, ChevronDown } from "lucide-react";
+import { VoiceMarkdown } from "@/lib/markdown/voice-markdown";
 import { useAgent, type AgentStep } from "@/components/agent-context";
 import { cn } from "@/lib/utils";
 
@@ -174,7 +174,7 @@ export function VoicePanel({
                     Agent
                   </div>
                   <div className="voice-md">
-                    <ReactMarkdown>{msg}</ReactMarkdown>
+                    <VoiceMarkdown text={msg} />
                   </div>
                   {isLast && running && (
                     <span className="mt-1 inline-block h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-accent)]" />

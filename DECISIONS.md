@@ -14,9 +14,9 @@
 
 ## Voice panel layout + markdown
 
-**Decision:** Rebuild `VoicePanel` as chronological **turn blocks** (user bubble → agent markdown via `react-markdown` → collapsible gray **Activity** `<details>` for thinking + tools). Scroll container uses `useLayoutEffect` to pin `scrollTop` to `scrollHeight` on step/transcript changes.
+**Decision:** Rebuild `VoicePanel` as chronological **turn blocks** (user bubble → agent markdown via small in-repo `VoiceMarkdown` parser → collapsible gray **Activity** `<details>` for thinking + tools). Scroll container uses `useLayoutEffect` to pin `scrollTop` to `scrollHeight` on step/transcript changes.
 
-**Why:** Single “latest message” string hid history and felt bare; raw markdown looked messy; users wanted tool/reasoning noise tucked away but visible.
+**Why:** `react-markdown` pulled `micromark` into Next’s server bundle and caused missing `vendor-chunks` runtime errors; a tiny parser covers headings, lists, fenced code, and inline bold/code/links for voice replies.
 
 ## App halo while agent runs
 

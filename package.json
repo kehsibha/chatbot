@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/speech/fold-recognition-results.test.ts src/lib/agent/navigation.test.ts src/lib/agent/ui-highlight.test.ts src/lib/agent/ui-highlight-from-call.test.ts",
+    "test": "tsx --test src/lib/speech/fold-recognition-results.test.ts src/lib/agent/navigation.test.ts src/lib/agent/ui-highlight.test.ts src/lib/agent/ui-highlight-from-call.test.ts src/lib/markdown/voice-markdown-parse.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/lib/db/migrate.ts",
     "db:seed": "tsx src/lib/db/seed.ts",
@@ -40,7 +40,6 @@
     "next": "15.1.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-markdown": "^10.1.0",
     "tailwind-merge": "^2.5.5",
     "zod": "^3.24.1"
   },
