@@ -12,6 +12,12 @@
 
 **Why:** User asked for a cleaner default canvas and wanted mic + reasoning controls together in the corner, not in the sidebar.
 
+## Voice orb hydration
+
+**Decision:** Always render the same bottom-right dock (brain + mic); gate speech with `mounted && speech.isSupported` and disable the mic until then. Add `suppressHydrationWarning` on `<body>` for extension-injected attributes (e.g. Feedly).
+
+**Why:** `isSupported` was false during SSR and true in Chrome, so the server rendered one branch and the client another.
+
 ## Agent “touch” UI glow
 
 **Decision:** On each successful mutating `tool_result`, derive string keys (`region:*`, `route:*`, `project:*`, `action:*`) via `computeTouchHighlightKeys`, store them in `AgentProvider` for ~900ms, and apply a global CSS class `agent-touch-glow` on matching wrappers (`AgentRegionGlow`, `AgentRouteGlow`, `AgentProjectGlow`, `AgentActionGlow`).

@@ -27,6 +27,11 @@ export function VoiceOrb({
   const { send, running } = useAgent();
   const speech = useSpeechRecognition();
 
+  /** Avoid SSR vs client mismatch: speech API is absent on server, present in browser. */
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  const voiceEnabled = mounted && speech.isSupported;
+
   const [expanded, setExpanded] = React.useState(false);
   const [orbState, setOrbState] = React.useState<OrbState>("idle");
 
@@ -45,6 +50,7 @@ export function VoiceOrb({
     function handleKey(e: KeyboardEvent) {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "v") {
         e.preventDefault();
+        if (!voiceEnabled) return;
         // Don't toggle voice if user is focused in a textarea/input.
         const tag = (document.activeElement?.tagName ?? "").toLowerCase();
         if (tag === "textarea" || tag === "input") return;
@@ -54,9 +60,10 @@ export function VoiceOrb({
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orbState, speech.isListening]);
+  }, [orbState, speech.isListening, voiceEnabled]);
 
   function toggle() {
+    if (!voiceEnabled) return;
     if (orbState === "idle") {
       startListening();
     } else if (orbState === "listening") {
@@ -65,6 +72,7 @@ export function VoiceOrb({
   }
 
   function startListening() {
+    if (!voiceEnabled) return;
     speech.reset();
     speech.start();
     setOrbState("listening");
@@ -90,6 +98,7 @@ export function VoiceOrb({
   }
 
   function handleOrbClick() {
+    if (!voiceEnabled) return;
     if (orbState === "idle") {
       startListening();
     } else if (orbState === "listening") {
@@ -100,31 +109,10 @@ export function VoiceOrb({
     }
   }
 
-  if (!speech.isSupported) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          type="button"
-          onClick={onToggleReasoning}
-          title={showReasoning ? "Hide reasoning" : "Show reasoning"}
-          aria-pressed={showReasoning}
-          className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition-all duration-200",
-            showReasoning
-              ? "border-[var(--color-accent)] bg-[var(--color-accent-light)] text-[var(--color-accent)]"
-              : "border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-fg-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-fg)]",
-          )}
-        >
-          <Brain className="h-5 w-5" />
-        </button>
-      </div>
-    );
-  }
-
   return (
     <>
       {/* Expanded transcript panel — sits above the dock */}
-      {expanded && (
+      {expanded && voiceEnabled && (
         <VoicePanel
           transcript={speech.transcript}
           interimTranscript={speech.interimTranscript}
@@ -149,31 +137,42 @@ export function VoiceOrb({
           <Brain className="h-5 w-5" />
         </button>
 
-        {/* Mic — primary capture */}
+        {/* Mic — primary capture (disabled until mounted when API exists) */}
         <button
           type="button"
+          disabled={!voiceEnabled}
           onClick={handleOrbClick}
+          title={
+            !voiceEnabled
+              ? mounted
+                ? "Voice input not supported in this browser"
+                : "Loading voice…"
+              : undefined
+          }
           aria-label={
-            orbState === "idle"
-              ? "Start voice input"
-              : orbState === "listening"
-                ? "Send voice message"
-                : "Toggle voice panel"
+            !voiceEnabled
+              ? "Voice input unavailable"
+              : orbState === "idle"
+                ? "Start voice input"
+                : orbState === "listening"
+                  ? "Send voice message"
+                  : "Toggle voice panel"
           }
           className={cn(
             "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-lg transition-all duration-200",
-            // Idle
-            orbState === "idle" &&
+            !voiceEnabled && "cursor-not-allowed opacity-40",
+            voiceEnabled &&
+              orbState === "idle" &&
               "bg-[var(--color-accent)] text-white hover:scale-105 hover:shadow-xl",
-            // Listening — accent bg with breathing ring
-            orbState === "listening" &&
+            voiceEnabled &&
+              orbState === "listening" &&
               "bg-[var(--color-accent)] text-white scale-105",
-            // Processing / responding
-            (orbState === "processing" || orbState === "responding") &&
+            voiceEnabled &&
+              (orbState === "processing" || orbState === "responding") &&
               "border border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-accent)]",
           )}
         >
-          {orbState === "listening" && (
+          {voiceEnabled && orbState === "listening" && (
             <>
               <span className="animate-voice-breathe absolute inset-0 rounded-full bg-[var(--color-accent)] opacity-40" />
               <span
