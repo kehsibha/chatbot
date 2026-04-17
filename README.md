@@ -56,6 +56,12 @@ pnpm db:seed      # load a few example projects and actions
 pnpm dev
 ```
 
+If the dev server throws **`__webpack_modules__[moduleId] is not a function`**, stop it and clear the build cache, then start again:
+
+```bash
+pnpm dev:clean
+```
+
 Open <http://localhost:3000>. You'll land on **Today**.
 
 ## How to use it
