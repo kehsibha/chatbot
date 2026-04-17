@@ -15,14 +15,24 @@ import {
   AlertTriangle,
   User as UserIcon,
   Trash2,
+  ArrowUp,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAgent, type AgentStep } from "@/components/agent-context";
 import { cn } from "@/lib/utils";
 
 export function ReasoningPanel() {
-  const { steps, running, clear } = useAgent();
+  const { steps, running, clear, send } = useAgent();
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [draft, setDraft] = React.useState("");
+
+  const submitDraft = React.useCallback(async () => {
+    const text = draft.trim();
+    if (!text || running) return;
+    setDraft("");
+    await send(text);
+  }, [draft, running, send]);
 
   React.useEffect(() => {
     const el = scrollRef.current;
@@ -68,6 +78,42 @@ export function ReasoningPanel() {
         {steps.map((step, i) => (
           <StepBlock key={i} step={step} />
         ))}
+      </div>
+
+      <div className="shrink-0 border-t border-[var(--color-border)] p-3">
+        <div className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-[var(--color-fg-dim)]">
+          Message coach
+        </div>
+        <div className="flex gap-2">
+          <textarea
+            rows={2}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submitDraft();
+              }
+            }}
+            disabled={running}
+            placeholder="Capture, clarify, or ask what’s next…"
+            className="min-h-[44px] flex-1 resize-y rounded-md border border-[var(--color-border)] bg-[var(--color-panel-2)] px-2.5 py-2 text-xs text-[var(--color-fg)] placeholder:text-[var(--color-fg-dim)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] disabled:opacity-50"
+          />
+          <Button
+            type="button"
+            size="icon"
+            className="h-9 w-9 shrink-0 self-end"
+            disabled={running || !draft.trim()}
+            title="Send (Enter)"
+            onClick={submitDraft}
+          >
+            {running ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowUp className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
     </aside>
   );

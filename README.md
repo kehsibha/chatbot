@@ -5,7 +5,7 @@ clarifies, and organizes on your behalf, using Claude as the agent behind a
 visible chain-of-thought interface.
 
 - **Kanban board** as the primary visual surface (project views, Today, Inbox, Upcoming).
-- **Thin chat bar** pinned to the bottom — speak/type in natural language.
+- **Voice orb** plus a compact **message** field in the reasoning panel — speak or type to the coach without a full-width bottom bar.
 - **Reasoning panel** on the right that streams the agent's thinking, tool calls,
   and results in real time.
 - **Voice-friendly**: designed for messy stream-of-consciousness dumps from a
@@ -61,7 +61,7 @@ Open <http://localhost:3000>. You'll land on **Today**.
 
 ## How to use it
 
-1. **Capture** — Type or voice-dictate into the bottom bar. Examples:
+1. **Capture** — Type in the reasoning panel or voice-dictate from the orb. Examples:
    - `"need to call the dentist tomorrow and buy cat food on the way home"`
    - `"idea: write a blog post about focus rituals"`
    - `"remind me to follow up with sarah on the design review"`
@@ -124,10 +124,9 @@ src/
       actions/            # REST for actions
       projects/           # REST for projects
   components/
-    app-shell.tsx         # sidebar + main + reasoning panel + agent bar
+    app-shell.tsx         # sidebar + main + reasoning panel + voice orb
     sidebar.tsx
-    agent-bar.tsx         # bottom chat input
-    reasoning-panel.tsx   # right-hand chain-of-thought panel
+    reasoning-panel.tsx   # chain-of-thought + compact message input
     agent-context.tsx     # SSE client + React context
     action-row.tsx        # list-style row for actions
     ui/                   # button, card, input, checkbox primitives

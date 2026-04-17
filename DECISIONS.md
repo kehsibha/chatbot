@@ -6,6 +6,14 @@
 
 **Ruled out:** Returning opaque URLs from the model (error-prone ids), or inferring navigation from assistant text only (no reliable hook).
 
+## Remove full-width bottom agent bar
+
+**Decision:** Remove `AgentBar` from `AppShell` and fold a small textarea + send control into the bottom of `ReasoningPanel` so typing to the agent does not consume a permanent strip across the main canvas.
+
+**Why:** The user wanted the bottom panel gone; voice + right-rail messaging keeps capture and visible agency without competing with Kanban/lists for vertical space.
+
+**Ruled out:** Dropping typed input entirely (keyboard-heavy GTD workflows still need it).
+
 ## Speech recognition transcript folding
 
 **Decision:** Process only `SpeechRecognitionEvent.results` from `resultIndex` onward when appending finals and computing interim text.
