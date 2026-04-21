@@ -12,6 +12,24 @@
 
 **Why:** User asked for a cleaner default canvas and wanted mic + reasoning controls together in the corner, not in the sidebar.
 
+## Voice panel layout + markdown
+
+**Decision:** Rebuild `VoicePanel` as chronological **turn blocks** (user bubble → agent markdown via small in-repo `VoiceMarkdown` parser → collapsible gray **Activity** `<details>` for thinking + tools). Scroll container uses `useLayoutEffect` to pin `scrollTop` to `scrollHeight` on step/transcript changes.
+
+**Why:** `react-markdown` pulled `micromark` into Next’s server bundle and caused missing `vendor-chunks` runtime errors; a tiny parser covers headings, lists, fenced code, and inline bold/code/links for voice replies.
+
+## App halo while agent runs
+
+**Decision:** `AgentControlHalo` — `pointer-events-none` fixed inset with inner rounded ring using `agent-app-halo` CSS animation, driven by `running` from `AgentProvider`.
+
+**Why:** Clear “system is acting” affordance without blocking clicks.
+
+## Touch glow on `tool_call` (not only `tool_result`)
+
+**Decision:** `computeTouchHighlightKeysFromToolCall` + `queueMicrotask` pulse on `tool_call` SSE, lengthen pulse duration to 1.4s, strengthen CSS (outline + brighter shadow).
+
+**Why:** Highlights were easy to miss during slow tool execution; result-only pulse felt disconnected.
+
 ## Voice orb hydration
 
 **Decision:** Always render the same bottom-right dock (brain + mic); gate speech with `mounted && speech.isSupported` and disable the mic until then. Add `suppressHydrationWarning` on `<body>` for extension-injected attributes (e.g. Feedly).
